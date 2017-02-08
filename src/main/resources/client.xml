@@ -1,0 +1,34 @@
+<client-cache xmlns="http://geode.apache.org/schema/cache" xmlns:gpdb="http://schema.pivotal.io/gemfire/gpdb"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://geode.apache.org/schema/cache http://geode.apache.org/schema/cache/cache-1.0.xsd
+                        http://schema.pivotal.io/gemfire/gpdb http://schema.pivotal.io/gemfire/gpdb/gpdb-2.3.xsd"
+	version="1.0">
+
+    <pool name="pool" max-connections="10">
+        <locator host="localhost" port="10334"/>
+    </pool>
+
+    <pdx>
+        <pdx-serializer>
+            <class-name>org.apache.geode.pdx.ReflectionBasedAutoSerializer</class-name>
+            <parameter name="classes">
+                <string>.*</string>
+            </parameter>
+        </pdx-serializer>
+    </pdx>
+
+    <!-- No cache storage in the client region because of the PROXY client region shortcut setting. -->
+
+    <region name="Master">
+        <region-attributes refid="PROXY" pool-name="pool" />
+    </region>
+    
+    <region name="MasterIndex">
+        <region-attributes refid="PROXY" pool-name="pool" />
+    </region>
+    
+    <region name="Trace">
+        <region-attributes refid="PROXY" pool-name="pool" />
+    </region>
+
+</client-cache>
