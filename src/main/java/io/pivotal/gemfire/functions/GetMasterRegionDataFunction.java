@@ -8,13 +8,11 @@ import org.apache.geode.cache.execute.FunctionContext;
 import org.apache.geode.cache.execute.RegionFunctionContext;
 import org.apache.geode.cache.partition.PartitionRegionHelper;
 import org.apache.geode.pdx.PdxInstance;
-import org.apache.geode.pdx.WritablePdxInstance;
 
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Set;
 
 public class GetMasterRegionDataFunction implements Function, Declarable {
 	private static final long serialVersionUID = 1L;
@@ -23,49 +21,47 @@ public class GetMasterRegionDataFunction implements Function, Declarable {
 	public void execute(FunctionContext context) {
 		System.out.println(Thread.currentThread().getName() + ": Executing " + getId());
 		RegionFunctionContext rfc = (RegionFunctionContext) context;
-		Region localRegion = PartitionRegionHelper.getLocalDataForContext(rfc);
+		Region localRegion = PartitionRegionHelper.getLocalDataForContext(rfc); // TRACE
 		
 		Map<String, Region<?, ?>> regions = PartitionRegionHelper.getLocalColocatedRegions(rfc);
 		
 		Map buffer = new HashMap();
+		Region masters = regions.get("/MASTER");
+		Region transformeds = regions.get("/TRACE_TRANSFORMED");
+		Iterator<PdxInstance> iter = localRegion.keySet().iterator();
 		
-		Region masters = regions.get("/Master");
-		Region masterIndices = regions.get("/MasterIndex");
-		Iterator<String> iter = localRegion.keySet().iterator();
-		/*
+		String res = "";
+		//res = localRegion.keySet().toString();
+		
 		while (iter.hasNext()) {
-			String equipId = iter.next().toString();
-			PdxInstance trace = (PdxInstance) localRegion.get(equipId);
-			if (masterIndices.get(equipId) != null) {
-				String timestamp = masterIndices.get(equipId).toString();
-				
-				PdxInstance key = (new CacheFactory()).create()
+			PdxInstance traceKey = iter.next();
+			PdxInstance trace = (PdxInstance) localRegion.get(traceKey);
+			
+			if (trace != null) {
+				PdxInstance masterKey = (new CacheFactory()).create()
 						.createPdxInstanceFactory("io.pivotal.gemfire.domain.MasterKey")
-						.writeString("timestamp", timestamp)
-						.writeString("equipId", equipId)
+						.writeString("equipId", trace.getField("equipId").toString())
+						.writeString("step", trace.getField("step").toString())
 						.create();
-				PdxInstance value = (PdxInstance) masters.get(key);
-				String param = value.getField("param").toString();
-				WritablePdxInstance trace1 = trace.createWriter();
-				trace1.setField("param", param);
-				//buffer.put(equipId, trace1);
-				localRegion.put(equipId, trace1);
+				PdxInstance master = (PdxInstance) masters.get(masterKey);
+				if (master != null) {
+					String param = master.getField("param").toString();
+					//TraceTransformed value = new TraceTransformed(trace, param);
+					PdxInstance value = (new CacheFactory()).create()
+							.createPdxInstanceFactory("io.pivotal.gemfire.domain.TraceTransformed")
+							.writeString("timestamp", trace.getField("timestamp").toString())
+							.writeString("lotId", trace.getField("lotId").toString())
+							.writeString("equipId", trace.getField("equipId").toString())
+							.writeString("step", trace.getField("step").toString())
+							.writeString("val", trace.getField("val").toString())
+							.writeString("param", param)
+							.create();
+					transformeds.put(traceKey, value);
+				}
 			}
+			
 		}
-		*/
-		//localRegion.putAll(buffer);
-		/*
-		int numLocalEntries = localRegion.size();
-
-		// Destroy each entry
-		long start = 0, end = 0;
-		start = System.currentTimeMillis();
-		localRegion.removeAll(localRegion.keySet());
-		end = System.currentTimeMillis();
-		System.out.println(Thread.currentThread().getName() + ": Cleared " + numLocalEntries + " entries in "
-				+ (end - start) + " ms");
-		*/
-		context.getResultSender().lastResult(Boolean.valueOf(localRegion.containsKey("EquipId0")).toString());
+		context.getResultSender().lastResult(res);
 	}
 
 	public String getId() {

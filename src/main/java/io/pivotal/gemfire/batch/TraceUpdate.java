@@ -36,9 +36,9 @@ public class TraceUpdate {
 	}
 
 	public void getRegions() {
-		masters = cache.getRegion("Master");
+		masters = cache.getRegion("MASTER");
 		System.out.println("Got the Master Region: " + masters);
-		traces = cache.getRegion("Trace");
+		traces = cache.getRegion("TRACE");
 		System.out.println("Got the Trace Region: " + traces);
 	}
 	

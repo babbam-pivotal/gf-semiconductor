@@ -1,4 +1,4 @@
-package io.pivotal.gemfire.g2c;
+package io.pivotal.gemfire;
 
 import org.apache.geode.cache.Region;
 import org.apache.geode.cache.client.ClientCache;

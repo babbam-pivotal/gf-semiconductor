@@ -37,14 +37,14 @@ public class PRBResultCollector implements ResultCollector<Object[], String> {
 			List primaryBucketInfo = (List) entry.getValue()[0];
 			List redundantBucketInfo = (List) entry.getValue()[1];
 			appendBucketInfo(builder, primaryBucketInfo, "Primary");
-			appendBucketInfo(builder, redundantBucketInfo, "Redundant");
+			//appendBucketInfo(builder, redundantBucketInfo, "Redundant");
 			builder.append("\n");
 			primaryBucketCount += primaryBucketInfo.size();
-			redundantBucketCount += redundantBucketInfo.size();
+			//redundantBucketCount += redundantBucketInfo.size();
 			configuredBucketCount = (Integer) entry.getValue()[2];
 		}
 		builder.append("\nPrimary Bucket Count=").append(primaryBucketCount);
-		builder.append("\nRedundant Bucket Count=").append(redundantBucketCount);
+		//builder.append("\nRedundant Bucket Count=").append(redundantBucketCount);
 		builder.append("\nConfigured Bucket Count=").append(configuredBucketCount);
 		return builder.toString();
 	}
@@ -54,9 +54,11 @@ public class PRBResultCollector implements ResultCollector<Object[], String> {
 		builder.append("\n\t").append(bucketType).append(" buckets:");
 		for (Iterator i = sort(bucketInfo).iterator(); i.hasNext();) {
 			Map map = (Map) i.next();
-			builder.append("\n\t\t").append("Row=").append(++row).append(", BucketId=").append(map.get("BucketId"))
-					.append(", Bytes=").append(map.get("Bytes")).append(", Size=").append(map.get("Size"))
-					.append(", Keys=" + map.get("::keys"));
+			if (map.get("keys") != null) {
+				builder.append("\n\t\t").append("Row=").append(++row).append(", BucketId=").append(map.get("BucketId"))
+						.append(", Bytes=").append(map.get("Bytes")).append(", Size=").append(map.get("Size"))
+						.append(", Keys=" + map.get("keys"));
+			}
 		}
 	}
 

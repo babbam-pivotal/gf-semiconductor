@@ -1,4 +1,4 @@
-package io.pivotal.gemfire.g2c;
+package io.pivotal.gemfire;
 
 import org.apache.geode.cache.Region;
 import org.apache.geode.cache.client.ClientCache;
@@ -16,7 +16,7 @@ public class ExportData {
 		ClientCacheFactory ccf = new ClientCacheFactory();
 		ccf.set("cache-xml-file", "client.xml");
 		ClientCache cache = ccf.create();
-		Region<String, Trace> region = cache.getRegion("Trace");
+		Region<String, Trace> region = cache.getRegion("TRACE_GPDB");
 
 		FunctionInvoker.executeImportFromGemfireToGPDB(region);
 	}

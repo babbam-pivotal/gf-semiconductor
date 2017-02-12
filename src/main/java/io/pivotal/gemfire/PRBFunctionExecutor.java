@@ -16,6 +16,7 @@ public class PRBFunctionExecutor {
 	private ClientCache cache;
 	private Region<?, ?> traces;
 	private Region<?, ?> masters;
+	private Region<?, ?> transformed;
 
 	public static void main(String[] args) {
 		PRBFunctionExecutor executor = new PRBFunctionExecutor();
@@ -35,17 +36,21 @@ public class PRBFunctionExecutor {
 	}
 
 	public void getRegions() {
-		masters = cache.getRegion("Master");
-		System.out.println("Got the Master Region: " + masters);
-		traces = cache.getRegion("Trace");
-		System.out.println("Got the Trace Region: " + traces);
+		masters = cache.getRegion("MASTER");
+		System.out.println("Got the MASTER Region: " + masters);
+		traces = cache.getRegion("TRACE");
+		System.out.println("Got the TRACE Region: " + traces);
+		transformed = cache.getRegion("TRACE_TRANSFORMED");
+		System.out.println("Got the TRACE Region: " + transformed);
 	}
-
+	
 	public void printBuckets() {
 		System.out.println("\nTrace buckets");
 		executePRB(traces);
 		System.out.println("\nMaster buckets");
 		executePRB(masters);
+		System.out.println("\nTransformed buckets");
+		executePRB(transformed);
 	}
 
 	public void executePRB(Region r) {

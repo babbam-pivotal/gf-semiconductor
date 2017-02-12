@@ -5,52 +5,70 @@
                         http://schema.pivotal.io/gemfire/gpdb http://schema.pivotal.io/gemfire/gpdb/gpdb-2.3.xsd"
 	version="1.0">
 
-	<pdx read-serialized="true" persistent="false">
+	<pdx read-serialized="true"> <!-- persistent="false"/> -->
 		<pdx-serializer>
 			<class-name>org.apache.geode.pdx.ReflectionBasedAutoSerializer</class-name>
 			<parameter name="classes">
-				<string>.*</string>
-				<!--  io.pivotal.gemfire.training.bookshop.domain.*-->
+				<string>io.pivotal.gemfire.domain.*</string>
 			</parameter>
 		</pdx-serializer>
 	</pdx>
-	
+
 	<jndi-bindings>
 		<jndi-binding jndi-name="datasource" type="SimpleDataSource"
 			jdbc-driver-class="org.postgresql.Driver" user-name="gpadmin"
 			password="pivotal" connection-url="jdbc:postgresql://172.16.44.129:5432/gpadmin">
 		</jndi-binding>
 	</jndi-bindings>
-	
-	<region name="Trace">
+
+	<region name="TRACE">
 		<region-attributes refid="PARTITION">
-			<partition-attributes redundant-copies="1" />
+			<partition-attributes redundant-copies="1">
+				<partition-resolver>
+					<class-name>io.pivotal.gemfire.domain.TracePartitionResolver</class-name>
+				</partition-resolver>
+			</partition-attributes>
+		</region-attributes>
+	</region>
+
+	<region name="MASTER">
+		<region-attributes refid="PARTITION">
+			<partition-attributes redundant-copies="1" colocated-with="TRACE">
+				<partition-resolver>
+					<class-name>io.pivotal.gemfire.domain.TracePartitionResolver</class-name>
+				</partition-resolver>
+			</partition-attributes>
+		</region-attributes>
+	</region>
+
+	<region name="TRACE_TRANSFORMED">
+		<region-attributes refid="PARTITION">
+			<partition-attributes redundant-copies="1" colocated-with="TRACE">
+				<partition-resolver>
+					<class-name>io.pivotal.gemfire.domain.TracePartitionResolver</class-name>
+				</partition-resolver>
+			</partition-attributes>
+			
 			<!-- 
 			<cache-listener>
 				<class-name>io.pivotal.gemfire.listener.TraceCacheListener</class-name>
 			</cache-listener>
-			-->
+			 -->
 		</region-attributes>
 	</region>
-	
-	<region name="Master">
+
+	<region name="TRACE_GPDB">
 		<region-attributes refid="PARTITION">
-			<partition-attributes redundant-copies="1" colocated-with="Trace">
-				<partition-resolver name="TracePartitionResolver">
+			<partition-attributes redundant-copies="1" colocated-with="TRACE">
+				<partition-resolver>
 					<class-name>io.pivotal.gemfire.domain.TracePartitionResolver</class-name>
 				</partition-resolver>
 			</partition-attributes>
 		</region-attributes>
 	</region>
 	
-	<region name="MasterIndex">
-		<region-attributes refid="PARTITION">
-			<partition-attributes redundant-copies="1" colocated-with="Trace" />
-		</region-attributes>
-	</region>
-	
 	<!-- 
-	<region name="Temp">
+	<region name="TRACE_GPDB">
 		<region-attributes refid="PARTITION">
 			<partition-attributes redundant-copies="1" />
 		</region-attributes>
@@ -66,9 +84,9 @@
 			</gpdb:types>
 		</gpdb:store>
 	</region>
-
+	
 	<gpdb:gpfdist port="8003" />
-	 -->
+	-->
 	
 	<function-service>
 		<function>

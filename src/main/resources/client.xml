@@ -8,7 +8,7 @@
         <locator host="localhost" port="10334"/>
     </pool>
 
-    <pdx>
+    <pdx read-serialized="true"> <!-- persistent="false"/>  -->
         <pdx-serializer>
             <class-name>org.apache.geode.pdx.ReflectionBasedAutoSerializer</class-name>
             <parameter name="classes">
@@ -19,15 +19,19 @@
 
     <!-- No cache storage in the client region because of the PROXY client region shortcut setting. -->
 
-    <region name="Master">
+    <region name="TRACE">
+        <region-attributes refid="PROXY" pool-name="pool" />
+    </region>
+
+    <region name="MASTER">
+        <region-attributes refid="PROXY" pool-name="pool" />
+    </region>
+        
+    <region name="TRACE_TRANSFORMED">
         <region-attributes refid="PROXY" pool-name="pool" />
     </region>
     
-    <region name="MasterIndex">
-        <region-attributes refid="PROXY" pool-name="pool" />
-    </region>
-    
-    <region name="Trace">
+    <region name="TRACE_GPDB">
         <region-attributes refid="PROXY" pool-name="pool" />
     </region>
 

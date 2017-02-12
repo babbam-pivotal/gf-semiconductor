@@ -5,28 +5,24 @@ import org.apache.geode.pdx.PdxSerializable;
 import org.apache.geode.pdx.PdxWriter;
 
 public class Master extends MasterKey implements PdxSerializable {
-
-	private String lotId;
+	
 	private String param;
 	
 	public Master() {
 	}
 	
-	public Master(String timestamp, String equipId, String lotId, String param) {
-		setTimestamp(timestamp);
-		setEquipId(equipId);
-		this.lotId = lotId;
+	public Master(MasterKey key, String param) {
+		setEquipId(key.getEquipId());
+		setStep(key.getStep());
 		this.param = param;
 	}
 	
-	public String getLotId() {
-		return lotId;
+	public Master(String equipId, String step, String param) {
+		setEquipId(equipId);
+		setStep(step);
+		this.param = param;
 	}
-
-	public void setLotId(String lotId) {
-		this.lotId = lotId;
-	}
-
+	
 	public String getParam() {
 		return param;
 	}
@@ -37,20 +33,18 @@ public class Master extends MasterKey implements PdxSerializable {
 
 	@Override
 	public String toString() {
-		return "Master [timestamp=" + getTimestamp() + ", equipId=" + getEquipId() + ", lotId=" + lotId + ", param=" + param + "]";
+		return "Master [equipId=" + getEquipId() + ", step=" + getStep() + ", param=" + param + "]";
 	}
 	
 	public void toData(PdxWriter writer) {
-		writer.writeString("timestamp", getTimestamp())
-		.writeString("equipId", getEquipId())
-		.writeString("lotId", lotId)
+		writer.writeString("equipId", getEquipId())
+		.writeString("step", getStep())
 		.writeString("param", param);
 	}
 
 	public void fromData(PdxReader reader) {
-		setTimestamp(reader.readString(getTimestamp()));
-		setEquipId(reader.readString(getEquipId()));
-		lotId = reader.readString(lotId);
-		param = reader.readString(param);
+		setEquipId(reader.readString("equipId"));
+		setStep(reader.readString("step"));
+		param = reader.readString("param");
 	}
 }

@@ -54,10 +54,12 @@ public class PRBFunction implements Function, Declarable {
 			map.put("Size", br.size());
 			map.put("Bytes", br.getTotalBytes());
 			if (pr.getBucketPrimary(br.getId()).equals(this.member)) {
-				map.put("::keys", br.keys().toString());
+				if (br.keys().size() > 0) {
+					map.put("keys", br.keys().toString());
+				}
 				primaryBucketInfo.add(map);
-			} else {
-				redundantBucketInfo.add(map);
+//			} else {
+//				redundantBucketInfo.add(map);
 			}
 			
 		}

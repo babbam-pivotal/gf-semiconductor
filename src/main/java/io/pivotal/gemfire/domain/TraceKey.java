@@ -5,24 +5,32 @@ import org.apache.geode.pdx.PdxReader;
 import org.apache.geode.pdx.PdxSerializable;
 import org.apache.geode.pdx.PdxWriter;
 
-public class MasterKey implements PdxSerializable {
+public class TraceKey implements PdxSerializable {
 
+	private String timestamp;
 	private String equipId;
-	private String step;
 	
-	public MasterKey() {
+	public TraceKey() {
 	}
 	
-	public MasterKey(PdxInstance pdxI) {
+	public TraceKey(PdxInstance pdxI) {
+		this.timestamp = pdxI.getField("timestamp").toString();
 		this.equipId = pdxI.getField("equipId").toString();
-		this.step = pdxI.getField("step").toString();
 	}
 	
-	public MasterKey(String equipId, String step) {
+	public TraceKey(String timestamp, String equipId) {
+		this.timestamp = timestamp;
 		this.equipId = equipId;
-		this.step = step;
 	}
 	
+	public String getTimestamp() {
+		return timestamp;
+	}
+
+	public void setTimestamp(String timestamp) {
+		this.timestamp = timestamp;
+	}
+
 	public String getEquipId() {
 		return equipId;
 	}
@@ -31,26 +39,18 @@ public class MasterKey implements PdxSerializable {
 		this.equipId = equipId;
 	}
 	
-	public String getStep() {
-		return step;
-	}
-
-	public void setStep(String step) {
-		this.step = step;
-	}
-
 	@Override
 	public String toString() {
-		return "MasterKey [equipId=" + equipId + ", step=" + step + "]";
+		return "TraceKey [timestamp=" + timestamp + ", equipId=" + equipId + "]";
 	}
 
 	public void toData(PdxWriter writer) {
-		writer.writeString("equipId", equipId)
-		.writeString("step", step);
+		writer.writeString("timestamp", timestamp)
+		.writeString("equipId", equipId);
 	}
 
 	public void fromData(PdxReader reader) {
+		timestamp = reader.readString("timestamp");
 		equipId = reader.readString("equipId");
-		step = reader.readString("step");
 	}
 }

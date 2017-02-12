@@ -7,7 +7,7 @@ import org.apache.geode.cache.EntryOperation;
 import org.apache.geode.cache.PartitionResolver;
 import org.apache.geode.pdx.PdxInstance;
 
-public class TracePartitionResolver implements PartitionResolver, Declarable {
+public class TracePartitionResolver<V> implements PartitionResolver<PdxInstance, V>, Declarable {
 	private static final long serialVersionUID = 1L;
 	
 	public TracePartitionResolver() {
@@ -19,12 +19,22 @@ public class TracePartitionResolver implements PartitionResolver, Declarable {
 	public void init(Properties props) {
 	}
 
-	public Object getRoutingObject(EntryOperation opDetails) {
-		//MasterKey key = (MasterKey) opDetails.getKey();
-		//return key.getEquipId();
-		
+	public Object getRoutingObject(EntryOperation<PdxInstance, V> opDetails) {
 		PdxInstance key = (PdxInstance) opDetails.getKey();
 		return key.getField("equipId");
+		/*
+		if (opDetails.getKey() instanceof MasterKey) {
+			MasterKey key = (MasterKey) opDetails.getKey();
+			return key.getEquipId();
+		} else if (opDetails.getKey() instanceof TraceKey) {
+			TraceKey key = (TraceKey) opDetails.getKey();
+			return key.getEquipId();
+		} else if (opDetails.getKey() instanceof PdxInstance) {
+			PdxInstance key = (PdxInstance) opDetails.getKey();
+			return key.getField("equipId");
+		}
+		return "";
+		*/
 	}
 
 	public String getName() {
