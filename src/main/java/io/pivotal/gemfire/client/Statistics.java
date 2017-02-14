@@ -44,13 +44,14 @@ public class Statistics {
 						if (rate > max) {
 							max = rate;
 						}
-					}
+					
 					System.out.println(new SimpleDateFormat("mm:ss").format(Calendar.getInstance().getTime()));
 					System.out.println(String.format("Cur %.0f writes/sec", rate));
 					System.out.println(String.format("Max %.0f writes/sec", max));
 					
 					counter.set(0l);
 					startTime = System.currentTimeMillis();
+					}
 				} else {
 					try {
 						Thread.sleep(100);
