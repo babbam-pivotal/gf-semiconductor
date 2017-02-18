@@ -5,68 +5,153 @@ import org.apache.geode.pdx.PdxReader;
 import org.apache.geode.pdx.PdxSerializable;
 import org.apache.geode.pdx.PdxWriter;
 
-public class TraceTransformed extends Trace implements PdxSerializable {
-	private String param;
+public class TraceTransformed extends TraceKey implements PdxSerializable {
+	private String ts;
+	private String vl;
+	private String ls; // from Master
+	private String us; // from Master
+	private String sl;
 
 	public TraceTransformed() {
 	}
 	
-	public TraceTransformed(Trace trace, String param) {
-		setTimestamp(trace.getTimestamp());
-		setLotId(trace.getLotId());
-		setEquipId(trace.getEquipId());
-		setStep(trace.getStep());
-		setVal(trace.getVal());
-		this.param = param;
-	}
-	
-	public TraceTransformed(PdxInstance trace, String param) {
-		setTimestamp(trace.getField("timestamp").toString());
-		setLotId(trace.getField("lotId").toString());
-		setEquipId(trace.getField("equipId").toString());
-		setStep(trace.getField("step").toString());
-		setVal(Double.parseDouble(trace.getField("val").toString()));
-		this.param = param;
+	public TraceTransformed(PdxInstance key, String ts, String vl, String ls, String us, String sl) {
+		setEqpIndex(key.getField("eqpIndex").toString());
+		setUnitIndex(key.getField("unitIndex").toString());
+		setParamIndex(key.getField("paramIndex").toString());
+		setLotId(key.getField("lotId").toString());
+		setPpId(key.getField("ppId").toString());
+		setRecipeId(key.getField("recipeId").toString());
+		setStepSeq(key.getField("stepSeq").toString());
+		setPairId(key.getField("pairId").toString());
+		setProcessId(key.getField("processId").toString());
+		setWaferId(key.getField("waferId").toString());
+		setWaferNo(Integer.parseInt(key.getField("waferNo").toString()));
+		setLotType(key.getField("lotType").toString());
+		setStatusTf(Boolean.getBoolean(key.getField("statusTf").toString()));
+		//setSeq(Long.parseLong(key.getField("seq").toString()));
+		this.ts = ts;
+		this.vl = vl;
+		this.ls = ls;
+		this.us = us;
+		this.sl = sl;
 	}
 
-	public TraceTransformed(String timestamp, String lotId, String equipId, String step, double val, String param) {
-		setTimestamp(timestamp);
+	public String getTs() {
+		return ts;
+	}
+
+	public void setTs(String ts) {
+		this.ts = ts;
+	}
+
+	public String getVl() {
+		return vl;
+	}
+
+	public void setVl(String vl) {
+		this.vl = vl;
+	}
+
+	public String getLs() {
+		return ls;
+	}
+
+	public void setLs(String ls) {
+		this.ls = ls;
+	}
+
+	public String getUs() {
+		return us;
+	}
+
+	public void setUs(String us) {
+		this.us = us;
+	}
+
+	public String getSl() {
+		return sl;
+	}
+
+	public void setSl(String sl) {
+		this.sl = sl;
+	}
+
+	public TraceTransformed(String eqpIndex, String unitIndex, String paramIndex, String lotId, String ppId, String recipeId,
+			String stepSeq, String pairId, String processId, String waferId, int waferNo, String lotType,
+			boolean statusTf, long seq, String ts, String vl, String ls, String us, String sl) {
+		setEqpIndex(eqpIndex);
+		setUnitIndex(unitIndex);
+		setParamIndex(paramIndex);
 		setLotId(lotId);
-		setEquipId(equipId);
-		setStep(step);
-		setVal(val);
-		this.param = param;
-	}
-
-	public String getParam() {
-		return param;
-	}
-
-	public void setParam(String param) {
-		this.param = param;
+		setPpId(ppId);
+		setRecipeId(recipeId);
+		setStepSeq(stepSeq);
+		setPairId(pairId);
+		setProcessId(processId);
+		setWaferId(waferId);
+		setWaferNo(waferNo);
+		setLotType(lotType);
+		setStatusTf(statusTf);
+		//setSeq(seq);
+		this.ts = ts;
+		this.vl = vl;
+		this.ls = ls;
+		this.us = us;
+		this.sl = sl;
 	}
 
 	@Override
 	public String toString() {
-		return "TraceTransformed [timestamp=" +getTimestamp() + ", lotId=" + getLotId() + "equipId=" + getEquipId() + ", step="
-				+ getStep() + ", val=" + getVal() + ", param" + param + "]";
+		return "TraceTransformed [eqpIndex=" + getEqpIndex() + ", unitIndex=" + getUnitIndex() + ", paramIndex="
+				+ getParamIndex() + ", lotId=" + getLotId() + ", ppId=" + getPpId() + ", recipeId=" + getRecipeId()
+				+ ", stepSeq=" + getStepSeq() + ", pairId=" + getPairId() + ", processId=" + getProcessId()
+				+ ", waferId=" + getWaferId() + ", waferNo=" + getWaferNo() + ", lotType=" + getLotType()
+				+ ", statusTf=" + isStatusTf() + /*", seq=" + getSeq() +*/ "ts=" + ts.toString() + ", vl=" + vl.toString()
+				+ ", ls=" + ls + ", us=" + us + ", sl=" + sl.toString() + "]";
 	}
-	
+
 	public void toData(PdxWriter writer) {
-		writer.writeString("timestamp", getTimestamp())
+		writer.writeString("eqpIndex", getEqpIndex())
+		.writeString("unitIndex", getUnitIndex())
+		.writeString("paramIndex", getParamIndex())
 		.writeString("lotId", getLotId())
-		.writeString("equipId", getEquipId())
-		.writeString("step", getStep())
-		.writeDouble("val",getVal())
-		.writeString("param", param);
+		.writeString("ppId", getPpId())
+		.writeString("recipeId", getRecipeId())
+		.writeString("stepSeq", getStepSeq())
+		.writeString("pairId", getPairId())
+		.writeString("processId", getProcessId())
+		.writeString("waferId", getWaferId())
+		.writeInt("waferNo", getWaferNo())
+		.writeString("lotType", getLotType())
+		.writeBoolean("statusTf", isStatusTf())
+		//.writeLong("seq", getSeq())
+		.writeString("ts", ts)
+		.writeString("vl", vl)
+		.writeString("ls", ls)
+		.writeString("us", us)
+		.writeString("sl", sl);
 	}
 
 	public void fromData(PdxReader reader) {
-		setTimestamp(reader.readString("timestamp"));
+		setEqpIndex(reader.readString("eqpIndex"));
+		setUnitIndex(reader.readString("unitIndex"));
+		setParamIndex(reader.readString("paramIndex"));
 		setLotId(reader.readString("lotId"));
-		setEquipId(reader.readString("equipId"));
-		setStep(reader.readString("step"));
-		setVal(reader.readDouble("val"));
-		param = reader.readString("param");
+		setPpId(reader.readString("ppId"));
+		setRecipeId(reader.readString("recipeId"));
+		setStepSeq(reader.readString("stepSeq"));
+		setPairId(reader.readString("pairId"));
+		setProcessId(reader.readString("processId"));
+		setWaferId(reader.readString("waferId"));
+		setWaferNo(reader.readInt("waferNo"));
+		setLotType(reader.readString("lotType"));
+		setStatusTf(reader.readBoolean("statusTf"));
+		//setSeq(reader.readLong("seq"));
+		ts = reader.readString("ts");
+		vl = reader.readString("vl");
+		ls = reader.readString("ls");
+		us = reader.readString("us");
+		sl = reader.readString("sl");
 	}
 }

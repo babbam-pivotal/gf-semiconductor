@@ -13,6 +13,7 @@ import io.pivotal.gemfire.functions.FunctionInvoker;
 
 public class GfLoader {
 	static int BULK_COUNT = 1000;
+	static int UNIT = 8;
 	
 	public GfLoader() {
 	}
@@ -33,75 +34,116 @@ public class GfLoader {
 		Region<?, ?> traces = cache.getRegion("TRACE");
 		Region<?, ?> transformed = cache.getRegion("TRACE_TRANSFORMED");
 		
-		Map buffer = new HashMap();
+		Map traceBuffer = new HashMap();
+		Map masterBuffer = new HashMap();
 		FunctionInvoker.executeClearRegionRemoveAll(transformed);
 		
-		if (FunctionInvoker.executeClearRegionRemoveAll(traces)) {
+		if (FunctionInvoker.executeClearRegionRemoveAll(traces) && 
+				FunctionInvoker.executeClearRegionRemoveAll(masters)) {
 			for (int i = 0; i < count; i++) {
 				String timestamp = new Timestamp(System.nanoTime()).toString();
-				String lotId = "LotId" + i;
-				String equipId = "EquipId" + (i % BULK_COUNT);
-				String step = "STEP" + (i % (count / BULK_COUNT));
-				double val = randomInRange(0, 10);
+				//int waferNo = new Random().nextInt();
+				int waferNo = 0;
 				
 				PdxInstance key = cache.createPdxInstanceFactory("io.pivotal.gemfire.domain.TraceKey")
-						.writeString("timestamp", timestamp)
-						.writeString("equipId", equipId)
+						.writeString("eqpIndex", "EqpIndex" + (i % UNIT))
+						.writeString("unitIndex", "UnitIndex" + (i % UNIT))
+						.writeString("paramIndex", "ParamIndex" + (i % UNIT))
+						.writeString("lotId", "LotId" + (i % UNIT))
+						.writeString("ppId", "PpId" + (i % UNIT))
+						.writeString("recipeId", "RecipeId" + (i % UNIT))
+						.writeString("stepSeq", "StepSeq" + (i % UNIT))
+						.writeString("pairId", "PairId" + (i % UNIT))
+						.writeString("processId", "ProcessId" + (i % UNIT))
+						.writeString("waferId", "WaferId" + (i % UNIT))
+						.writeInt("waferNo", waferNo)
+						.writeString("lotType", "LotId" + (i % UNIT))
+						.writeBoolean("statusTf", true)
+						.writeLong("seq", new Long(i))
 						.create();
 				PdxInstance trace = cache.createPdxInstanceFactory("io.pivotal.gemfire.domain.Trace")
-						.writeString("timestamp", timestamp)
-						.writeString("lotId", lotId)
-						.writeString("equipId", equipId)
-						.writeString("step", step)
-						.writeDouble("val", val)
+						.writeString("eqpIndex", "EqpIndex" + (i % UNIT))
+						.writeString("unitIndex", "UnitIndex" + (i % UNIT))
+						.writeString("paramIndex", "ParamIndex" + (i % UNIT))
+						.writeString("lotId", "LotId" + (i % UNIT))
+						.writeString("ppId", "PpId" + (i % UNIT))
+						.writeString("recipeId", "RecipeId" + (i % UNIT))
+						.writeString("stepSeq", "StepSeq" + (i % UNIT))
+						.writeString("pairId", "PairId" + (i % UNIT))
+						.writeString("processId", "ProcessId" + (i % UNIT))
+						.writeString("waferId", "WaferId" + (i % UNIT))
+						.writeInt("waferNo", waferNo)
+						.writeString("lotType", "LotId" + (i % UNIT))
+						.writeBoolean("statusTf", true)
+						.writeString("ts", timestamp)
+						.writeString("vl", new Integer(new Random().nextInt()).toString())
+						.writeString("ls", "")
+						.writeString("us", "")
+						.writeString("sl", "10")
 						.create();
+				traceBuffer.put(key, trace);
 				
-				buffer.put(key, trace);
+				if (i < UNIT) {
+					PdxInstance masterKey = cache.createPdxInstanceFactory("io.pivotal.gemfire.domain.TraceKey")
+							.writeString("eqpIndex", "EqpIndex" + (i % UNIT))
+							.writeString("unitIndex", "UnitIndex" + (i % UNIT))
+							.writeString("paramIndex", "ParamIndex" + (i % UNIT))
+							.writeString("lotId", "LotId" + (i % UNIT))
+							.writeString("ppId", "PpId" + (i % UNIT))
+							.writeString("recipeId", "RecipeId" + (i % UNIT))
+							.writeString("stepSeq", "StepSeq" + (i % UNIT))
+							.writeString("pairId", "PairId" + (i % UNIT))
+							.writeString("processId", "ProcessId" + (i % UNIT))
+							.writeString("waferId", "WaferId" + (i % UNIT))
+							.writeInt("waferNo", waferNo)
+							.writeString("lotType", "LotId" + (i % UNIT))
+							.writeBoolean("statusTf", true)
+							.writeLong("seq", 0l)
+							.create();
+					PdxInstance master = cache.createPdxInstanceFactory("io.pivotal.gemfire.domain.Master")
+							.writeString("eqpIndex", "EqpIndex" + (i % UNIT))
+							.writeString("unitIndex", "UnitIndex" + (i % UNIT))
+							.writeString("paramIndex", "ParamIndex" + (i % UNIT))
+							.writeString("lotId", "LotId" + (i % UNIT))
+							.writeString("ppId", "PpId" + (i % UNIT))
+							.writeString("recipeId", "RecipeId" + (i % UNIT))
+							.writeString("stepSeq", "StepSeq" + (i % UNIT))
+							.writeString("pairId", "PairId" + (i % UNIT))
+							.writeString("processId", "ProcessId" + (i % UNIT))
+							.writeString("waferId", "WaferId" + (i % UNIT))
+							.writeInt("waferNo", waferNo)
+							.writeString("lotType", "LotId" + (i % UNIT))
+							.writeBoolean("statusTf", true)
+							.writeString("ls", "MASTER_LS")
+							.writeString("us", "MASTER_US")
+							.create();
+					masterBuffer.put(masterKey, master);
+				}
 				if ((i % BULK_COUNT == BULK_COUNT-1)) {
-					traces.putAll(buffer);
-					buffer.clear();
+					traces.putAll(traceBuffer);
+					traceBuffer.clear();
+					masters.putAll(masterBuffer);
+					masterBuffer.clear();
 				}
 			}
-			if (!buffer.isEmpty()) {
-				traces.putAll(buffer);
+			
+			if (!traceBuffer.isEmpty()) {
+				traces.putAll(traceBuffer);
+				//System.out.println("##### buffer is not empty. region.putAll buffer.size: " + buffer.size());
+			}
+			if (!masterBuffer.isEmpty()) {
+				masters.putAll(masterBuffer);
 				//System.out.println("##### buffer is not empty. region.putAll buffer.size: " + buffer.size());
 			}
 			System.out.println("### " + count + " data loaded in Trace region.");
 		} else {
 			System.out.println("Some Trace data are not removed.");
 		}
-		
-		if (FunctionInvoker.executeClearRegionRemoveAll(masters)) {
-			buffer.clear();
-			
-			for (int i = 0; i < count; i++) {
-				String equipId = "EquipId" + (i % BULK_COUNT);
-				String step = "STEP" + (i % (count / BULK_COUNT));
-				PdxInstance key = cache.createPdxInstanceFactory("io.pivotal.gemfire.domain.MasterKey")
-						.writeString("equipId", equipId)
-						.writeString("step", step)
-						.create();
-				PdxInstance master = cache.createPdxInstanceFactory("io.pivotal.gemfire.domain.Master")
-						.writeString("equipId", equipId)
-						.writeString("step", step)
-						.writeString("param", "PARAM" + i)
-						.create();
-				
-				buffer.put(key, master);
-			}
-			if (!buffer.isEmpty()) {
-				masters.putAll(buffer);
-				//System.out.println("##### buffer is not empty. region.putAll buffer.size: " + buffer.size());
-			}
-			System.out.println("### " + count + " data loaded in Master region.");
-		} else {
-			System.out.println("Some Master data are not removed.");
-		}
 	}
 	
 	public static double randomInRange(double min, double max) {
 		double range = max - min;
-		double scaled = new Random().nextDouble() * range;
+		double scaled = new Random().nextInt() * range;
 		return (scaled + min);
 	}
 }

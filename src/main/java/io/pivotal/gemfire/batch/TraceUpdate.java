@@ -3,17 +3,14 @@ package io.pivotal.gemfire.batch;
 import org.apache.geode.cache.Region;
 import org.apache.geode.cache.client.ClientCache;
 import org.apache.geode.cache.client.ClientCacheFactory;
-import org.apache.geode.cache.execute.Execution;
-import org.apache.geode.cache.execute.FunctionService;
-import org.apache.geode.cache.execute.ResultCollector;
 
 import io.pivotal.gemfire.functions.FunctionInvoker;
-import io.pivotal.gemfire.functions.PRBResultCollector;
 
 public class TraceUpdate {
 	private ClientCache cache;
 	private Region<?, ?> traces;
 	private Region<?, ?> masters;
+	private Region<?, ?> transformed;
 	
 	public TraceUpdate() {
 	}
@@ -37,12 +34,15 @@ public class TraceUpdate {
 
 	public void getRegions() {
 		masters = cache.getRegion("MASTER");
-		System.out.println("Got the Master Region: " + masters);
+		System.out.println("Got the MASTER Region: " + masters);
 		traces = cache.getRegion("TRACE");
-		System.out.println("Got the Trace Region: " + traces);
+		System.out.println("Got the TRACE Region: " + traces);
+		transformed = cache.getRegion("TRACE_TRANSFORMED");
+		System.out.println("Got the TRACE_TRANSFORMED Region: " + transformed);
 	}
 	
 	public void printInfo() {
+		FunctionInvoker.executeMakeArray(traces);
 		FunctionInvoker.executeGetMasterRegionData(traces);
 	}
 }

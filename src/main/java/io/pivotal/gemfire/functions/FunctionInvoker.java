@@ -1,15 +1,8 @@
 package io.pivotal.gemfire.functions;
 
-import java.util.List;
-
 import org.apache.geode.cache.Region;
-import org.apache.geode.cache.client.ClientCache;
-import org.apache.geode.cache.client.ClientCacheFactory;
 import org.apache.geode.cache.execute.FunctionService;
 import org.apache.geode.cache.execute.ResultCollector;
-import org.apache.geode.internal.cache.tier.sockets.VersionedObjectList.Iterator;
-
-import io.pivotal.gemfire.domain.Trace;
 
 public class FunctionInvoker {
 	//ClientCache cache;
@@ -37,6 +30,13 @@ public class FunctionInvoker {
 		}
 		
 		return true;
+	}
+	
+	public static void executeMakeArray(Region<?, ?> region) {
+		ResultCollector<?, ?> rc = FunctionService.onRegion(region).execute("MakeArrayFunction");
+		Object result = rc.getResult();
+		// Array size seems to be node count.
+		System.out.println("executeMakeArray.result: " + result);
 	}
 	
 	public static void executeGetMasterRegionData(Region<?, ?> region) {

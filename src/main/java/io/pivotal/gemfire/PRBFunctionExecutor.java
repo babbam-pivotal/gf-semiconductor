@@ -7,9 +7,6 @@ import org.apache.geode.cache.execute.Execution;
 import org.apache.geode.cache.execute.FunctionService;
 import org.apache.geode.cache.execute.ResultCollector;
 
-import io.pivotal.gemfire.domain.Master;
-import io.pivotal.gemfire.domain.MasterKey;
-import io.pivotal.gemfire.domain.Trace;
 import io.pivotal.gemfire.functions.PRBResultCollector;
 
 public class PRBFunctionExecutor {
@@ -41,7 +38,7 @@ public class PRBFunctionExecutor {
 		traces = cache.getRegion("TRACE");
 		System.out.println("Got the TRACE Region: " + traces);
 		transformed = cache.getRegion("TRACE_TRANSFORMED");
-		System.out.println("Got the TRACE Region: " + transformed);
+		System.out.println("Got the TRACE_TRANSFORMED Region: " + transformed);
 	}
 	
 	public void printBuckets() {
