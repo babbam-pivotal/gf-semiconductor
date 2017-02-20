@@ -6,19 +6,19 @@ import org.apache.geode.cache.Cache;
 import org.apache.geode.cache.CacheFactory;
 import org.apache.geode.cache.Declarable;
 import org.apache.geode.cache.Region;
+import org.apache.geode.cache.execute.Function;
 import org.apache.geode.cache.execute.FunctionAdapter;
 import org.apache.geode.cache.execute.FunctionContext;
 import org.apache.geode.cache.execute.FunctionException;
 import org.apache.geode.cache.execute.RegionFunctionContext;
+import org.apache.geode.cache.partition.PartitionRegionHelper;
 
 import java.util.Properties;
 
-/**
- * Pivotal Data Engineering
- */
-public class ImportFromGemfireToGPDBFunction extends FunctionAdapter implements Declarable {
+
+public class ExportToGPDBFunction implements Function, Declarable {
 	private static final long serialVersionUID = 1L;
-	public static final String ID = "ImportFromGemfireToGPDBFunction";
+	public static final String ID = "ExportToGPDBFunction";
 	private transient Cache cache = CacheFactory.getAnyInstance();
 	private transient LogWriter logger = CacheFactory.getAnyInstance().getDistributedSystem().getLogWriter();
 
@@ -29,10 +29,13 @@ public class ImportFromGemfireToGPDBFunction extends FunctionAdapter implements 
 		}
 
 		try {
-
-			Region<?, ?> region = cache.getRegion("Customer");
+			Region<?, ?> region = cache.getRegion("TRACE_GPDB");
 			long numberOfResults = GpdbService.createOperation(region).exportRegion();
-
+			/*
+			RegionFunctionContext rfc = (RegionFunctionContext) context;
+			Region localRegion = PartitionRegionHelper.getLocalDataForContext(rfc); // TRACE_GPDB
+			long numberOfResults = GpdbService.createOperation(localRegion).exportRegion();
+			*/
 			String result = "Successfully imported this many records : " + numberOfResults;
 			logger.info(result);
 			context.getResultSender().lastResult(result);

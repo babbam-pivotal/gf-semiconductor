@@ -10,8 +10,8 @@ public class FunctionInvoker {
 	public FunctionInvoker() {
 	}
 
-	public static void executeImportFromGemfireToGPDB(Region<?, ?> region) {
-		ResultCollector<?, ?> rc = FunctionService.onRegion(region).execute("ImportFromGemfireToGPDBFunction");
+	public static void exportToGpdb(Region<?, ?> region) {
+		ResultCollector<?, ?> rc = FunctionService.onRegion(region).execute("ExportToGPDBFunction");
 		Object result = rc.getResult();
 
 		System.out.println(result.toString());

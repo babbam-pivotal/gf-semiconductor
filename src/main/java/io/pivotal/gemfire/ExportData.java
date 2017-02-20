@@ -18,7 +18,7 @@ public class ExportData {
 		ClientCache cache = ccf.create();
 		Region<String, Trace> region = cache.getRegion("TRACE_GPDB");
 
-		FunctionInvoker.executeImportFromGemfireToGPDB(region);
+		FunctionInvoker.exportToGpdb(region);
 	}
 
 }
