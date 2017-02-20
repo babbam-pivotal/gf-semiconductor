@@ -40,7 +40,7 @@
 			</partition-attributes>
 		</region-attributes>
 	</region>
-
+	
 	<region name="TRACE_TRANSFORMED">
 		<region-attributes refid="PARTITION">
 			<partition-attributes redundant-copies="1" colocated-with="TRACE">
@@ -53,7 +53,7 @@
 			<cache-listener>
 				<class-name>io.pivotal.gemfire.listener.TraceCacheListener</class-name>
 			</cache-listener>
-			 -->
+			-->
 		</region-attributes>
 	</region>
 
@@ -65,32 +65,55 @@
 				</partition-resolver>
 			</partition-attributes>
 		</region-attributes>
-	</region>
-	
-	<!-- 
-	<region name="TRACE_GPDB">
-		<region-attributes refid="PARTITION">
-			<partition-attributes redundant-copies="1" />
-		</region-attributes>
+		
 		<gpdb:store datasource="datasource">
 			<gpdb:types>
 				<gpdb:pdx name="io.pivotal.demo.domain.Trace" table="trace">
-					<gpdb:id field="equip_id" />
+					<gpdb:id>
+						<gpdb:field ref="eqpIndex" />
+						<gpdb:field ref="unitIndex" />
+						<gpdb:field ref="paramIndex" />
+						<gpdb:field ref="lotId" />
+						<gpdb:field ref="ppId" />
+						<gpdb:field ref="recipeId" />
+						<gpdb:field ref="stepSeq" />
+						<gpdb:field ref="pairId" />
+						<gpdb:field ref="processId" />
+						<gpdb:field ref="waferId" />
+						<gpdb:field ref="waferNo" />
+						<gpdb:field ref="lotType" />
+						<gpdb:field ref="statusTf" />
+					</gpdb:id>
 					<gpdb:fields>
-						<gpdb:field name="equip_id" column="id" />
-						<gpdb:field name="param" />
+						<gpdb:field name="eqpIndex" />
+						<gpdb:field name="unitIndex" />
+						<gpdb:field name="paramIndex" />
+						<gpdb:field name="lotId" />
+						<gpdb:field name="ppId" />
+						<gpdb:field name="recipeId" />
+						<gpdb:field name="stepSeq" />
+						<gpdb:field name="pairId" />
+						<gpdb:field name="processId" />
+						<gpdb:field name="waferId" />
+						<gpdb:field name="waferNo" class="java.lang.Integer" />
+						<gpdb:field name="lotType" />
+						<gpdb:field name="statusTf" class="java.lang.Boolean" />
+						<gpdb:field name="ts" />
+						<gpdb:field name="vl" />
+						<gpdb:field name="ls" />
+						<gpdb:field name="us" />
+						<gpdb:field name="sl" />
 					</gpdb:fields>
 				</gpdb:pdx>
 			</gpdb:types>
 		</gpdb:store>
 	</region>
 	
-	<gpdb:gpfdist port="8003" />
-	-->
-	
 	<function-service>
 		<function>
 			<class-name>io.pivotal.gemfire.functions.PRBFunction</class-name>
 		</function>
 	</function-service>
+	
+	<gpdb:gpfdist port="8003" />
 </cache>

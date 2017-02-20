@@ -1,6 +1,5 @@
 package io.pivotal.gemfire.functions;
 
-import org.apache.geode.cache.CacheFactory;
 import org.apache.geode.cache.Declarable;
 import org.apache.geode.cache.Region;
 import org.apache.geode.cache.execute.Function;
@@ -12,8 +11,6 @@ import org.apache.geode.pdx.WritablePdxInstance;
 
 import io.pivotal.gemfire.domain.TraceComparator;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;

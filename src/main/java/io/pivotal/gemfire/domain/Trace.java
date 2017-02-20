@@ -16,18 +16,6 @@ public class Trace extends TraceKey implements PdxSerializable {
 	public Trace() {
 	}
 
-	/*
-	 * public Trace(TraceKey key, String ts, String vl, String ls, String us,
-	 * int sl) { setEqpIndex(key.getEqpIndex());
-	 * setUnitIndex(key.getUnitIndex()); setParamIndex(key.getParamIndex());
-	 * setLotId(key.getLotId()); setPpId(key.getPpId());
-	 * setRecipeId(key.getRecipeId()); setStepSeq(key.getStepSeq());
-	 * setPairId(key.getPairId()); setProcessId(key.getProcessId());
-	 * setWaferId(key.getWaferId()); setWaferNo(key.getWaferNo());
-	 * setLotType(key.getLotType()); setStatusTf(key.isStatusTf());
-	 * setSeq(key.getSeq()); this.ts = ts; this.vl = vl; this.ls = ls; this.us =
-	 * us; this.sl = sl; }
-	 */
 	public Trace(PdxInstance key, String ts, String vl, String ls, String us, String sl) {
 		setEqpIndex(key.getField("eqpIndex").toString());
 		setUnitIndex(key.getField("unitIndex").toString());
